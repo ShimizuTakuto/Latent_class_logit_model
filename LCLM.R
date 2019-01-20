@@ -6,8 +6,7 @@ library(flexmix)
 data(Catsup)
 
 # 時間ステップの追加
-Catsup
-hogehoge<- Catsup %>% 
+Catsup <- Catsup %>% 
   mutate(t = seq_len(nrow(Catsup))) 
   
 # 変換の関数
@@ -30,12 +29,13 @@ Cdata <- Catsup$choice %>%
 
 #hunts32のブランド価値を0に設定
 Cdata$brand <- relevel(factor(Cdata$brand), "hunts32")
-set.seed(42)
 
 # いくつかのクラス数モデルを作成して当てはまりの良いクラス数を調べる
 I <- 10
 aic <- as.numeric(c())
 bic <- as.numeric(c())
+
+set.seed(42)
 
 for(i in 1:I){
   print(i)
