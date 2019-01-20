@@ -1,4 +1,5 @@
 # 潜在クラスロジットモデルの実装
+# の試行錯誤した残りカス
 
 library(tidyverse)
 library(mlogit)
@@ -6,21 +7,21 @@ library(flexmix)
 data(Catsup)
 
 ## 
-Catsup
-hogehoge<- Catsup %>% 
-  mutate(t = seq_len(nrow(Catsup))) %>% 
-  map(. %>%
-        select(choice) %>% 
-        unique() %>% 
-        as.character(),
-      tranceforme_catsup,
-      .) %>% 
+Catsup %>%
+  select(choice) %>% 
+  unique() %>% 
+  as.character() -> brand_list
+
+Catsup <- Catsup %>% 
+  mutate(t = seq_len(nrow(Catsup))) 
+%>% 
+  map(brand_list,
+      tranceforme_catsup) %>% 
   bind_rows() %>% 
   mutate(choice = with(.,choice == brand)) 
 
-
-tranceforme_catsup <- function(brand,data){
-  df <- data %>% 
+tranceforme_catsup <- function(brand){
+  df <- Catsup %>% 
     select(id, contains(brand), choice, t) %>% 
     rename(display = starts_with("dis"),
            price = starts_with("pri"),
@@ -34,21 +35,24 @@ Cdata <- Catsup$choice %>%
   as.character() %>% 
   map(tranceforme_catsup) %>% 
   bind_rows() %>% 
-  mutate(choice = with(.,choice == brand)) 
+  #mutate(choice = with(.,choice == brand)) %>% 
+  mutate(all = paste0(id, choice, t, display, feature, price, brand)) %>% 
+  arrange(all)
 
 vnames <- c("display", "feature", "price")
-Cdata <- reshape(Catsup,
+Cdata.org <- reshape(Catsup,
                  idvar = c("id", "t"),
                  times = c("heinz41","heinz32","heinz28","hunts32"),
                  timevar = "brand",
-                 varying = matrix(colnames(Catsup)[2:13], nrow = 3, byrow =
-                                    TRUE),
+                 varying = matrix(colnames(Catsup)[2:13], nrow = 3, byrow = TRUE),
                  v.names = vnames,
                  direction = "long")
 
-Cdata <- Cdata %>% 
-  mutate(choice = with(.,choice == brand)) %>% 
-  select(id, choice, t, vnames, brand)
+Cdata.org <- Cdata.org %>% 
+  #mutate(choice = with(.,choice == brand)) %>% 
+  select(id, choice, t, vnames, brand) %>% 
+  mutate(all = paste0(id, choice, t, display, feature, price, brand)) %>% 
+  arrange(all)
 
 #hunts32のブランド価値を0に設定
 Cdata$brand <- relevel(factor(Cdata$brand), "hunts32")
