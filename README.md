@@ -1,5 +1,6 @@
 # Latent_class_logit_model
-潜在クラスロジットモデルをRで実装するサンプル
+潜在クラスロジットモデルをRで実行するサンプル,
+flexmixパッケージを利用.
 - LCLM.R：mlogitのサンプルデータCatsupに対して潜在クラスロジットモデルを適用するコード
 - Latent_class_logit_model.Rproj：Rプロジェクタファイル
 - aic_bic_plot.png：1~10クラスでモデルを当てはめた時の各指標の値をグラフ化
